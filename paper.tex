@@ -24,6 +24,7 @@
 %
 \title{Enhancing End-to-End Malayalam Automatic Speech Recognition with Language Model Augmentation}
 
+
 \titlerunning{Malayalam ASR with Language Model}
 % If the paper title is too long for the running head, you can set
 % an abbreviated paper title here
@@ -49,7 +50,7 @@
 %
 \begin{abstract}
 
-Self-supervised learning (SSL) representations using transformers from multilingual speech have significantly improved the performance of automatic speech recognition (ASR) tasks in low-resource languages. This study focuses on the development of an ASR system for the Malayalam language using pretrained SSL representations and enhance its performance with the inclusion of a statistical n-gram language model. Our findings indicate that this lamguage model augmentation reduces the word error rate by approximately 8.1\% on out-of-domain test data and 7.2\% on in-domain test data. The datasets used are diverse, encompassing a variety of speakers, speech domains, and recording environments.  Our results underscore the critical role of augmenting pre-trained speech representations with language models in developing ASR systems for languages with limited training resources. The model is made openly available on HuggingFace for reproducibility and adaptation to similar languages.
+Self-supervised learning (SSL) representations using transformers from multilingual speech have significantly improved the performance of automatic speech recognition (ASR) tasks in low-resource languages. This study focuses on the development of an ASR system for the Malayalam language using pretrained SSL representations and enhance its performance with the inclusion of a statistical n-gram language model. Our findings indicate that this language model augmentation reduces the word error rate by 12.5\% on in-domain test data and 5.9\% on out-of-domain test data. The datasets used are diverse, encompassing a variety of speakers, speech domains, and recording environments.  Our results underscore the critical role of augmenting pre-trained speech representations with language models in developing ASR systems for languages with limited training resources. The model is made openly available on HuggingFace for reproducibility and adaptation to similar languages.
 % We compare the outcomes of fine-tuning transformer-based models with traditional speech recognition methods, where acoustic and language models are trained separately and then integrated. The resulting word error rates vary significantly depending on the test dataset.
  
 \keywords{Self-supervised Learning  \and Speech Recognition \and Pretrained Models \and Low-resource language \and Language Model \and Malayalam}
@@ -59,7 +60,7 @@ Self-supervised learning (SSL) representations using transformers from multiling
 
 Self supervised learning (SSL)  representation for speech has proven to be effective in diverse speech tasks including speech recognition, classification and even translation \cite{baevski2020wav2vec,babu2021xls,barrault2023seamlessm4t}.  They are built on the idea proposed in \cite{schneider2019wav2vec} where a generic representation of speech can be computed from a huge of unlabelled speech corpus in a process called pre-training. This multi lingual speech representations learnt from huge collection of unlabelled data has proven to be effective in building automatic speech recognition (ASR) systems for languages with limited annotated corpora \cite{conneau2020unsupervised}. Alternately there are sequence to sequence architectures like Whisper \cite{whisper} that uses weakly supervised pre-training on multilingual corpora followed by language specific fine-tuning to achieve comparable performance on ASR tasks. These transformer based ASR models can work even without explicit language modelling that has been conventionally an essential component in hybrid ASR systems \cite{manohar2023automatic}.
 
-In this paper we present the results of fine-tuning the XLS-R model \cite{babu2021xls} of 300 million parameters using publicly available Malayalam read speech corpora. We augment this process with an explicit statistical language modelling using publicly available Malayalam text corpora. We test the resulting ASR model on different test datasets, including out of domain (OOD) speech data. The results are compared with the baseline pretrained models, finetuned models without LM and models developed using conventional hybrid ASR architecture.
+In this paper we present the results of fine-tuning the XLS-R model \cite{babu2021xls} of 300 million parameters using publicly available Malayalam read speech corpora. We augment this process with an explicit statistical language modelling using publicly available Malayalam text corpora. We test the resulting ASR model on different test datasets, including out of domain (OOD) speech data. The results are compared with the finetuned models without an explicit language model.
 % We also study the impact of using language model adaptation to improve ASR performance. 
 
 
@@ -125,7 +126,7 @@ Recently, there have been increased efforts to collect and document more Indian 
 
 % There has not been much explorations on end-to-end ASR architectures for Malayalam ASR due to unavailability of labelled training data. With the advent of SSL models, it has now become possible to fine-tune them effectively even in the context of low resource languages \cite{yi2020applying,holla2022end}. In a previous attempt to fine-tune an ASR model for Malayalam\footnote{\href{https://huggingface.co/gvs/wav2vec2-large-xlsr-malayalam}{Hugging face model}}, a WER of 28\% was reported. It used XLSR-Wav2Vec2.0 transformer that was pretrained on speech data from 53 languages \cite{baevski2020wav2vec}. 
 
-In the proposed work presented in this paper we fine-tune the XLS-R pretrained transformer model usisng Malayalam read speech corpora from diverse sources as done in \cite{manohar2023automatic} and expand it with language model augmentation during decoding for improved ASR performance. 
+In the proposed work presented in this paper we fine-tune the XLS-R pretrained transformer model using Malayalam read speech corpora from diverse sources as done in \cite{manohar2023automatic} and expand it with language model augmentation during decoding for improved ASR performance. 
 % We also compare the results with a hybrid ASR architecture trained and tested on the same datasets. 
 
 
@@ -178,23 +179,25 @@ The XLS-R model explained in the previous section serves as an acoustic model. I
 % \textit{Needs rewrite as per the latest experiment}
 
 
-We use the publicly available open licensed Malayalam read speech datasets \cite{baby2016resources,he-etal-2020-open} in our experiments. Every speech recording in the dataset is associated with a textual transcript in the Malayalam script. As shown in Table \ref{tab:speechdatasets}, we divide the available speech into train and test data, ensuring that speakers and speech transcripts are not overlapped. The training data sets are combined to get $\approx$ 19 hours of speech for training. The train datasets are formal and studio recorded read speech. For testing, we use three different datasets: (i) T1, which belongs to the same kind of speech as in the train set; (ii) T2, which is studio recorded speech published by Google, (iii)T2, which is mostly mock conversational speech recorded in natural and noisy environments. Both T2 and T3 can be considered as an out of domain (OOD) test set. Datasets are tabulated in Table \ref{tab:speechdatasets}. We utilized a curated collection of text corpus consisting of 205k unique sentences published by SMC \cite{smctext} to create the language model. 
+We use the publicly available open licensed Malayalam read speech datasets \cite{baby2016resources,he-etal-2020-open} in our experiments. Every speech recording in the dataset is associated with a textual transcript in the Malayalam script. As shown in Table \ref{tab:speechdatasets}, we divide the available speech into train and test data, ensuring that speakers and speech transcripts are not overlapped. The training data sets are combined to get $\approx$ 69 hours of speech for training. The train datasets are formal and studio recorded read speech. For testing, we use three different datasets: (i) T1, which belongs to the same kind of speech as in the train set; (ii) T2, which is studio recorded speech published by Google, (iii)T2, which is mostly mock conversational speech recorded in natural and noisy environments. Both T2 and T3 can be considered as an out of domain (OOD) test set. Datasets are tabulated in Table \ref{tab:speechdatasets}. We utilized a curated collection of text corpus consisting of 205k unique sentences published by SMC \cite{smctext} to create the language model. 
 
 
 \begin{table}[htpb]
 	\caption{Details of Speech data sets used in our experiments. }
 	\label{tab:speechdatasets}
 	\centering
-	\begin{tabular}{llrr}
+	\begin{tabular}{|c|l|c|c|}
 		\hline \hline
 		\textbf{Sl. No.} & \textbf{Corpus}                                     & \textbf{\#Speakers} & \textbf{Duration} \\
 		              &                                                     &                                           & (hours)         \\
 		\hline
-		$1$             & Indic TTS, IITM \cite{baby2016resources}- Train     & $2$                                    & $14$               \\
-		$2$             & Open SLR  \cite{he-etal-2020-open} - Train & $37$                                  & $5$               \\ \hline
+    		$1$             & IMaSC  \cite{gopinath2022imasc} - Train & $8$                                  & $50$    \\
+		$2$             & Indic TTS, IITM \cite{baby2016resources}- Train     & $2$                                    & $14$               \\
+		$3$             & Open SLR  \cite{he-etal-2020-open} - Train & $37$                                  & $5$             
+           \\\hline
 		T1            & Open SLR  \cite{he-etal-2020-open} - Test  & $7$                                   & $1$                \\
 		% T2            & Festvox IIITH \cite{prahallad2012iiit} - Test       & $1$                   & $1000$                  & $98$                \\
-   	T2&FLEURS \cite{fleurs2022arxiv}   -Test                                                  &$0$                       & $0$  \\
+   	T2&FLEURS \cite{fleurs2022arxiv}   -Test                                                  &$2$                       & $1$  \\
 		 T3&MSC \cite{smcspeech}   -Test                             & $75$                                             & $1.5$                    \\
 
 \hline
@@ -259,7 +262,7 @@ In this section we explain the experimental setup for building the Malayalam ASR
 \begin{figure}[htpb]
 % \vspace{-0.2}
     \centering
-    \includegraphics[width=0.8\linewidth, height=0.4\linewidth]{WER.png}
+    \includegraphics[width=0.8\linewidth, height=0.5\linewidth]{wer-curve.png}
     \caption{WER reduction on validation data during training}
     \label{Fig:WER}
 
@@ -305,7 +308,7 @@ The initial CNN layers of the transformer for feature extraction are sufficientl
 \section{Results and Discussion}
 
 We evaluate our ASR model upon publicly available test datasets, namely T1, T2 and T3 as described in Table \ref{tab:speechdatasets}.  We present the 
-results of evaluating our model upon these test datasets, with and without the augmentation of a language model. ASR model performance is measured in terms of word error rate (WER). WER is calculated on the basis of the number of words (N) in the ground truth speech transcript and the number of word insertions (I), deletions (D) and  substitutions (S)  in the  predicted transcript as described in equation \ref{eq:wer}.
+results of evaluating our model upon these test datasets, with and without the augmentation of a language model. ASR model performance is measured in terms of word error rate (WER). WER is calculated on the basis of the number of words (N) in the ground truth speech transcript and the number of word insertions (I), deletions (D) and  substitutions (S)  in the  predicted transcript as described in equation \ref{eq:wer}. During evaluation, punctuation have been removed from the ground-truth to ensure no undue penalty is imposed.
 
 \begin{equation}
 	\label{eq:wer}
@@ -313,18 +316,18 @@ results of evaluating our model upon these test datasets, with and without the a
 \end{equation}
 
 
-T1 belongs to the same class of studio recorded read speech corpora used in the training process. T2 and T3 however are OOD datasets, where T3 is particularly unique with its mock conversational nature and noisy recording environments. With the augmentation of language models, the WER on the evaluation datasets T1, T2 and T3 are 26.5\%, 60.0\% and 72.6\%. These values show a relative improvement in WER when compared to the models without LM, by 7.2\%, 12.9\% and 8.1\% respectively.
+T1 belongs to the same class of studio recorded read speech corpora used in the training process. T2 and T3 however are OOD datasets, where T3 is particularly unique with its mock conversational nature and noisy recording environments. With a trigram language model on top of XLS-R acoustic model, the WER on the evaluation datasets T1, T2 and T3 are 27.3\%, 37.2\% and 52.9\% respectively. These values show a substantial improvement in WER when compared with the same model without an explicit LM by relative WER reduction of 12.5\%, 15.3\% and 5.9\% respectively.
 
 \begin{figure}[htpb]
 % \vspace{-0.2}
     \centering
-    \includegraphics[width=0.6\textwidth]{wer.png}
+    \includegraphics[width=0.55\textwidth]{wer.png}
     \caption{WER on evaluation datasets, with and without LM augmentation}
     \label{Fig:WEReval}
 
 \end{figure}
 
-The resulting WER on different datasets are illustrated in Fig. \ref{Fig:WEReval}. Even though the WER are prohibitively high in out of domain datasets, the augmentation of LM clearly shows the possibility of improving ASR systems for morphologically high low resource languages like Malayalam.
+The resulting WER on different datasets are illustrated in Fig. \ref{Fig:WEReval}. The augmentation of LM clearly shows the possibility of improving ASR systems for morphologically high low resource languages like Malayalam.
 
 % \subsection{Decoding the test speech}
 
@@ -344,14 +347,11 @@ The resulting WER on different datasets are illustrated in Fig. \ref{Fig:WEReval
 %     \caption{Performance Evaluation}
 %     \label{tab:results}
 %     \centering
-%     \begin{tabular}{l|cc}
+%     \begin{tabular}{l|c|c|c}
 %     \hline \hline
-%          \textbf{Model}& \multicolumn{2}{c}{\textbf{WER (\%)}} \\ 
-%           & \textbf{T1} & \textbf{T2 - OOD}\\ \hline
-%          GMM-HMM + Bigram LM&40.5& 91.5\\
-%          TDNN + Bigram LM&34.9 & 86.3\\ \hline
-%          \textbf{XLS-R + CTC  + Viterbi}  &\textbf{33.7} &\textbf{80.7}\\
-%          XLS-R+ CTC + KenLM&26.51&72.64 \\ 
+%          \textbf{Model}& \multicolumn{3}{c}{\textbf{WER (\%)}} \\  \hline
+%            {XLS-R (No LM)}  &{39.8} &{52.5} &{58.87}\\
+%          XLS-R (With LM) & & &\\ 
 %          \hline
 %     \end{tabular}
 
@@ -359,7 +359,7 @@ The resulting WER on different datasets are illustrated in Fig. \ref{Fig:WEReval
 
 \section{Conclusion}
 
-In this work, we have developed an ASR system for the Malayalam language using the self-supervised XLS-R architecture. The transformer is pre-trained on nearly 436K hours of unlabelled multilingual speech and fine-tuned on 19 hours of labelled Malayalam speech data from various publicly available sources. The results showed that our proposed model was superior to the traditional hybrid automatic speech recognition systems that were trained on the same speech dataset. By incorporating a language models on top of the XLS-R transformer, further improvement in the WER by  7.2\% was observed  on in-domain test dataset and an improvement of at least 8.1\% was observed on out of domain test datasets. An absolute improvement in WER is expected with additional speech data sources used in the fine-tuning process.
+In this work, we have developed an ASR system for the Malayalam language using the self-supervised XLS-R architecture. The transformer is pre-trained on nearly 436K hours of unlabelled multilingual speech and fine-tuned on 69 hours of labelled Malayalam speech data from various publicly available sources. By incorporating a trigram language model on top of the XLS-R transformer, further improvement in the WER by  12.5\% was observed  on in-domain test dataset and an improvement of at least 5.9\% was observed on out-of-domain test datasets. An absolute improvement in WER is expected with additional speech data sources used in the fine-tuning process.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
