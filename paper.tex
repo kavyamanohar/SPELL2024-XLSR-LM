@@ -24,72 +24,48 @@
 %
 \title{Enhancing End-to-End Malayalam Automatic Speech Recognition with Language Model Augmentation}
 
-
 \titlerunning{Malayalam ASR with Language Model}
 % If the paper title is too long for the running head, you can set
 % an abbreviated paper title here
 %
-% \author{Kavya Manohar\inst{1}\orcidID{0000-0003-2402-5272} \and
-% Ashish Abraham\inst{2}\orcidID{} \and
-% Gokul G Menon\inst{3}\orcidID{}}
-% %
-% \authorrunning{K. Manohar et al.}
-% % First names are abbreviated in the running head.
-% % If there are more than two authors, 'et al.' is used.
-% %
-% \institute{Digital University Kerala, India \\
-% \email{kavya.manohar@duk.ac.in} \and
-% Ashish Address \\
-% \email{ashishabraham22@gmail.com}\\
-% % \url{http://www.springer.com/gp/computer-science/lncs}
-% \and
-% Gokul Address\\
-% \email{gokulgmenon@gmail.com}}
+\author{Kavya Manohar\inst{1}\orcidID{0000-0003-2402-5272} \and
+Ashish Abraham\inst{2}\orcidID{0009-0004-5233-4499} \and
+Gokul G Menon\inst{3}\orcidID{0009-0006-0711-976X}}
 %
+\authorrunning{K. Manohar et al.}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Digital University Kerala, India \\
+\email{kavya.manohar@duk.ac.in} \and
+College of Engineering Trivandrum, Kerala, India \\
+\email{ashishabraham22@gmail.com}\\
+% \url{http://www.springer.com/gp/computer-science/lncs}
+\and
+College of Engineering Trivandrum, Kerala, India\\
+\email{gokulgovindmenon@gmail.com}}
+
 \maketitle              % typeset the header of the contribution
 %
 \begin{abstract}
 
-Self-supervised learning (SSL) representations using transformers from multilingual speech have significantly improved the performance of automatic speech recognition (ASR) tasks in low-resource languages. This study focuses on the development of an ASR system for the Malayalam language using pretrained SSL representations and enhance its performance with the inclusion of a statistical n-gram language model. Our findings indicate that this language model augmentation reduces the word error rate by 12.5\% on in-domain test data and 5.9\% on out-of-domain test data. The datasets used are diverse, encompassing a variety of speakers, speech domains, and recording environments.  Our results underscore the critical role of augmenting pre-trained speech representations with language models in developing ASR systems for languages with limited training resources. The model is made openly available on HuggingFace for reproducibility and adaptation to similar languages.
-% We compare the outcomes of fine-tuning transformer-based models with traditional speech recognition methods, where acoustic and language models are trained separately and then integrated. The resulting word error rates vary significantly depending on the test dataset.
- 
+Self-supervised learning (SSL) representations derived from multilingual speech using transformers have significantly improved the performance of automatic speech recognition (ASR) tasks in low-resource languages. This study focuses on the development of an ASR system for the Malayalam language using pretrained SSL representations and enhance its performance with the inclusion of a statistical n-gram language model. A language model enhances speech recognition by improving contextual accuracy by guiding the decoding process with linguistic probabilities and reducing transcription errors. Our findings indicate that the language model augmentation reduces the word error rate by 12.5\% on in-domain test data and 5.9\% on out-of-domain test data. The datasets used are diverse, encompassing a variety of speakers, speech domains, and recording environments.  Our results underscore the critical role of augmenting pre-trained speech representations with language models in developing ASR systems for languages with limited speech resources. The model is made openly available on HuggingFace for reproducibility and adaptation to similar languages.
+
 \keywords{Self-supervised Learning  \and Speech Recognition \and Pretrained Models \and Low-resource language \and Language Model \and Malayalam}
 \end{abstract}
 
 \section{Introduction}
 
-Self supervised learning (SSL)  representation for speech has proven to be effective in diverse speech tasks including speech recognition, classification and even translation \cite{baevski2020wav2vec,babu2021xls,barrault2023seamlessm4t}.  They are built on the idea proposed in \cite{schneider2019wav2vec} where a generic representation of speech can be computed from a huge of unlabelled speech corpus in a process called pre-training. This multi lingual speech representations learnt from huge collection of unlabelled data has proven to be effective in building automatic speech recognition (ASR) systems for languages with limited annotated corpora \cite{conneau2020unsupervised}. Alternately there are sequence to sequence architectures like Whisper \cite{whisper} that uses weakly supervised pre-training on multilingual corpora followed by language specific fine-tuning to achieve comparable performance on ASR tasks. These transformer based ASR models can work even without explicit language modelling that has been conventionally an essential component in hybrid ASR systems \cite{manohar2023automatic}.
+Self supervised learning (SSL)  representation for speech has proven to be effective in diverse speech tasks including speech recognition, classification and even translation \cite{baevski2020wav2vec,babu2021xls,barrault2023seamlessm4t}.  They are built on the idea proposed in \cite{schneider2019wav2vec} where a generic representation of speech can be computed from a huge of unlabelled speech corpus in a process called pre-training. This multilingual speech representations learnt from huge collection of unlabelled data has proven to be effective in building automatic speech recognition (ASR) systems for languages with limited annotated corpora \cite{conneau2020unsupervised}. 
 
-In this paper we present the results of fine-tuning the XLS-R model \cite{babu2021xls} of 300 million parameters using publicly available Malayalam read speech corpora. We augment this process with an explicit statistical language modelling using publicly available Malayalam text corpora. We test the resulting ASR model on different test datasets, including out of domain (OOD) speech data. The results are compared with the finetuned models without an explicit language model.
-% We also study the impact of using language model adaptation to improve ASR performance. 
-
-
-
-
-% Automatic Speech Recognition (ASR) is the process of converting natural human speech to textual form. Conventionally, an ASR system is built by combining (i) an acoustic model trained on an labelled speech corpus (ii) a language model trained on textual data and (iii) a pronunciation lexicon, that describes the pronunciation of a list of words that are ought to be recognised by the ASR. This is referred to as a hybrid ASR architecture and described in Fig.~\ref{asr}.
-
-% \begin{figure}
-%     \includegraphics[width=\textwidth]{ASR.png}
-%     \caption{Architecture of a conventional hybrid ASR} \label{asr}
-% \end{figure}
-
-% 
-
-
-% Closely following the popular Wav2Vec \cite{baevski2020wav2vec} architecture, pre-trained cross-lingual speech representations for Indic languages have also been reported \cite{gupta2021clsril}. The recent cross lingual speech representation (XLS-R) architecture uses 436K hours of publicly available unlabelled speech data from 128 languages to  prepare pre-trained neural speech representation models \cite{babu2021xls}. Our work is an attempt to utilise the capabilities of modern pre-trained audio transformers to build end-to-end speech recognition systems for low-resource languages like Malayalam.
-
-% In this paper we present the results of fine-tuning the XLS-R model of 0.3B parameters with a Ken language model using publicly available Malayalam read speech corpora. We test the resulting ASR model on different test datasets, including out of domain (OOD) speech data.
-% % We also study the impact of using language model adaptation to improve ASR performance. 
-% The results are compared with the baseline models developed using conventional hybrid ASR architecture. 
-
-% We have not attempted the integration of a language model after the fine-tuning process, but it is planned as a future work.
+In this paper we present the results of fine-tuning the XLS-R, an SSL model \cite{babu2021xls} of 300 million parameters using publicly available Malayalam read speech corpora. We augment this process with an explicit statistical language modelling using publicly available Malayalam text corpora. We test the resulting ASR model on different test datasets, including out of domain (OOD) speech data. The results are compared with the finetuned models without an explicit language model.
 
 \section{Related Works}
 \label{sec:relatedworks}
 
 The development of modern End-to-end ASR systems has been made possible by neural architectures, which enable the integration of different components of the system, including the acoustic model, language model, and pronunciation lexicon model, into a single network \cite{georgescu2021performance}. 
 In the past  few years, several  techniques have been proposed to overcome the challenges of limited speech resources in building end-to-end ASR systems \cite{barrault2023seamless,pratap2024scaling,whisper} .
-% This often requires tens of thousands of hours of labelled speech data for training than conventional hybrid ASR systems \cite{bayerl2019comparison}. 
+
 
 
 \begin{figure}[htpb]
@@ -98,35 +74,14 @@ In the past  few years, several  techniques have been proposed to overcome the c
 \end{figure}
 
 
-Self-supervised learning (SSL) is one such technique where in, a neural speech representation model is trained utilising a lot of unlabelled data  \cite{schneider2019wav2vec,baevski2020wav2vec,conneau2020unsupervised,barrault2023seamlessm4t}. This is referred to as pre-training. On top of the speech representation, a small labelled corpus can be used to achieve any supervised tasks such as speech recognition, emotion recognition, speaker identification and language identification. The number of languages used for pretraining vary from 53 languages in XLSR to 1107 languages in MMS \cite{pratap2024scaling}. In a procedure known as fine-tuning, the pre-trained model can be adapted with comparably less amount of labelled data for a specific task like speech recognition, emotion recognition as indicated in Fig. \ref{XLS-R}. For ASR, fine-tuning relies on the connectionist temporal classification (CTC) algorithm, which maps speech representations learnt during pre-training to the character sequences of the transcription script \cite{georgescu2021performance}.
+Self-supervised learning (SSL) is one such technique where in, a neural speech representation model is trained utilising a lot of unlabelled data  \cite{baevski2020wav2vec,barrault2023seamlessm4t,conneau2020unsupervised,schneider2019wav2vec}. This is referred to as pre-training. On top of the speech representation, a small labelled corpus can be used to achieve any supervised tasks such as speech recognition, emotion recognition, speaker identification and language identification. The number of languages used for pretraining vary from 53 languages in XLSR to 1107 languages in MMS \cite{pratap2024scaling}. In a procedure known as fine-tuning, the pre-trained model can be adapted with comparably less amount of labelled data for a specific task like speech recognition, emotion recognition as indicated in Fig. \ref{XLS-R}. For ASR, fine-tuning relies on the connectionist temporal classification (CTC) algorithm, which maps speech representations learnt during pre-training to the character sequences of the transcription script \cite{georgescu2021performance}.
 
-An alternate approach is to build an End-to-end ASR using the sequence to sequence transformer training in a weakly supervised manner. Here huge labelled speech corpora is needed and the most popular implementation of this approach is the Whisper model which is pretrained on 680 thousand hours of multilingual labelled speech data\cite{whisper}. The Whisper architecture predicts  text tokens in its output. The Whisper model provides various pre-trained checkpoints for fine-tuning with additional labelled speech data for improved ASR performance.
+An alternate approach is to build an End-to-end ASR using the sequence to sequence transformer training in a weakly supervised manner. Here huge labelled speech corpora is needed and the most popular implementation of this approach is the Whisper model which is pretrained on 680 thousand hours of multilingual labelled speech data \cite{whisper}. The Whisper architecture predicts  text tokens in its output. The Whisper model provides various pre-trained checkpoints for fine-tuning with additional labelled speech data for improved ASR performance. These sequence to sequence transformer based ASR models can work even without explicit language modelling that has been conventionally an essential component in hybrid ASR systems \cite{manohar2023automatic,sherly2024asr}.
 
 Recently, there have been increased efforts to collect and document more Indian language speech corpora, which are then used to train additional pre-trained checkpoints such as IndicWhisper \cite{bhogale2023vistaar} and IndicVoices \cite{javed2024indicvoices}. Prior to this, attempts were made to enhance the performance of unified ASR for Indian languages by incorporating multilingual language models in the SLP1 writing scheme \cite{anoop2022}, building on top of Indic Wav2Vec \cite{javed2022towards}. However, there has been limited progress in incorporating an additional monolingual language model to improve End-to-End ASR performance in the Malayalam language using the native script. In contrast, in hybrid ASR systems, the language model is an essential component. Results from using statistical n-gram language models with various subword units, ranging from syllables to words in Malayalam in hybrid ASR models have been reported in \cite{manohar2023improving}.
 
 
-% \textit{The pre-training finetuning concept in Whisper, Wav2Vec, XLS-R}
-
-% \textit{Attempts to finetune them. Vistaar. Indic Wav2Vec, Anoop CS work}
-
-% \textit{Other Malayalam ASR work - Kavya.}
-
-% \textit{Any prior work on LM adaptation on top of Wav2Vec or Whisper}
-
-% \textit{Types of Language Modelling, KenLM. Characetr LM, word LM and subword LM \cite{ahmed-2023-improving}}
-
-% There are numerous works that attempted to solve various challenges associated with Malayalam ASR. A universal comparison of results is not possible due to the unavailability of publicly available baseline test dataset in Malayalam. Out of vocabulary (OOV) words largely affect the WER, and most of the reported works use private datasets to train and test the ASR models, which does not detail the OOV rates of test datasets.
-
-% \subsection{Conventional hybrid ASR}
-
-% One of the earlier work on recognising continuous Malayalam speech uses HMM-ANN architecture and reports a WER of 13\% \cite{mohamed2012hmm}. An automatic phonetic recognizer for continuous Malayalam speech, trained on manually aligned phonetic transcription of waveforms  has resulted in a phonetic engine with recognition accuracy of 40.93\%  \cite{thennattil2016phonetic}. %when tested on 1 hour 15 minutes of speech. 
-% A work on continuous Malayalam speech recognition using CMU Sphinx toolkit with semi-automatically transcribed phonetic lexicon and GMM-HMM acoustic model has reported a sentence recognition accuracy of 84\% \cite{kurian2015development} and another work on similar lines has reported a WER of 34.8\% \cite{deekshitha2018development}. Recently, there has been many reported works on continuous Malayalam speech recognition using Kaldi toolkit \cite{povey2011kaldi}, employing advanced acoustic modelling like GMM (LDA+MLLT+SAT) \cite{babu2018continuous}, SGMM \cite{lekshmi2021asr}, DNN \cite{moncy2020automatic} and TDNN \cite{kavya2022}.
-
-% \subsection{End-to-end ASR}
-
-% There has not been much explorations on end-to-end ASR architectures for Malayalam ASR due to unavailability of labelled training data. With the advent of SSL models, it has now become possible to fine-tune them effectively even in the context of low resource languages \cite{yi2020applying,holla2022end}. In a previous attempt to fine-tune an ASR model for Malayalam\footnote{\href{https://huggingface.co/gvs/wav2vec2-large-xlsr-malayalam}{Hugging face model}}, a WER of 28\% was reported. It used XLSR-Wav2Vec2.0 transformer that was pretrained on speech data from 53 languages \cite{baevski2020wav2vec}. 
-
-In the proposed work presented in this paper we fine-tune the XLS-R pretrained transformer model using Malayalam read speech corpora from diverse sources as done in \cite{manohar2023automatic} and expand it with language model augmentation during decoding for improved ASR performance. 
+In the proposed work presented in this paper we fine-tune the XLS-R pretrained transformer model using Malayalam read speech corpora from diverse sources as done in \cite{manohar2023automatic} and expand it with language model augmentation during decoding for improved ASR performance. A language model improves speech recognition by enhancing contextual accuracy, reducing errors, and aiding in recovering noisy or poorly articulated speech \cite{georgescu2021performance}.
 % We also compare the results with a hybrid ASR architecture trained and tested on the same datasets. 
 
 
@@ -150,7 +105,7 @@ The CNN layers are followed by a transformer layer with self-attention. They bui
 
 % \subsection{Fine-tuning for ASR task}
 
-The purpose of fine-tuning is to map the context representations generated by the pre-trained model to their corresponding character tokens as labels, using labeled speech data. The process of fine-tuning the pre-trained model involves adding a linear classification layer on top of the Transformer and training the entire model by minimising the connectionist temporal classification (CTC) loss. During this process, the quantisation module is disabled and the model learns to map the context representations to the corresponding character tokens as labels. The training is done using the CTC loss, which is a commonly used loss function in ASR systems \cite{graves2006connectionist}. The CTC loss ($\mathcal{L}_{CTC}$) is a mathematical expression defined as in equation \ref{eq:ctcloss}. Here $w^*$ represents the ground-truth transcript, which is a character sequence.
+The purpose of fine-tuning is to map the context representations generated by the pre-trained model to their corresponding character tokens as labels, using labeled speech data. The process of fine-tuning the pre-trained model involves adding a linear classification layer on top of the transformer and training the entire model by minimising the connectionist temporal classification (CTC) loss. During this process, the quantisation module is disabled and the model learns to map the context representations to the corresponding character tokens as labels. The training is done using the CTC loss, which is a commonly used loss function in ASR systems \cite{graves2006connectionist}. The CTC loss ($\mathcal{L}_{CTC}$) is a mathematical expression defined as in equation \ref{eq:ctcloss}. Here $w^*$ represents the ground-truth transcript, which is a character sequence.
 
 \begin{equation}
 \label{eq:ctcloss}
@@ -167,9 +122,9 @@ The XLS-R model explained in the previous section serves as an acoustic model. I
 
 \begin{figure}[htpb]
     
-    \includegraphics[width=0.7\textwidth]{LM-decoder.png}
+    \includegraphics[width=0.9\textwidth]{LM.png}
     \centering
-    \caption{Proposed Architecture to integrate Malayalam LM to finetuned XLS-R architecture.} 
+    \caption{Proposed Architecture to integrate Malayalam LM to finetuned XLS-R architecture. It shows how a wrong character sequqnce predicted by the acoustic model is corrected by the language model.} 
     \label{Fig:LM-model}
 \end{figure}
 % \vspace{-1cm}
@@ -179,7 +134,7 @@ The XLS-R model explained in the previous section serves as an acoustic model. I
 % \textit{Needs rewrite as per the latest experiment}
 
 
-We use the publicly available open licensed Malayalam read speech datasets \cite{baby2016resources,he-etal-2020-open} in our experiments. Every speech recording in the dataset is associated with a textual transcript in the Malayalam script. As shown in Table \ref{tab:speechdatasets}, we divide the available speech into train and test data, ensuring that speakers and speech transcripts are not overlapped. The training data sets are combined to get $\approx$ 69 hours of speech for training. The train datasets are formal and studio recorded read speech. For testing, we use three different datasets: (i) T1, which belongs to the same kind of speech as in the train set; (ii) T2, which is studio recorded speech published by Google, (iii)T2, which is mostly mock conversational speech recorded in natural and noisy environments. Both T2 and T3 can be considered as an out of domain (OOD) test set. Datasets are tabulated in Table \ref{tab:speechdatasets}. We utilized a curated collection of text corpus consisting of 205k unique sentences published by SMC \cite{smctext} to create the language model. 
+We use the publicly available open licensed Malayalam read speech datasets \cite{baby2016resources,he-etal-2020-open} in our experiments. Every speech recording in the dataset is associated with a textual transcript in the Malayalam script. As shown in Table \ref{tab:speechdatasets}, we divide the available speech into train and test data. The training data sets are combined to get $\approx$ 69 hours of speech for training. The train datasets are formal and studio recorded read speech. For testing, we use three different datasets: (i) T1, which belongs to the same kind of speech as in the train set; (ii) T2, which is studio recorded speech published by Google, (iii) T3, which is mostly mock conversational speech recorded in natural and noisy environments. Both T2 and T3 can be considered as an out of domain (OOD) test set. Datasets are tabulated in Table \ref{tab:speechdatasets}. We utilized a curated collection of text corpus consisting of 205k unique sentences published by SMC \cite{smctext} to create the language model. 
 
 
 \begin{table}[htpb]
@@ -263,12 +218,12 @@ In this section we explain the experimental setup for building the Malayalam ASR
 % \vspace{-0.2}
     \centering
     \includegraphics[width=0.8\linewidth, height=0.5\linewidth]{wer-curve.png}
-    \caption{WER reduction on validation data during training}
+    \caption{WER reduction on validation data during training.}
     \label{Fig:WER}
 
 \end{figure}
 
-The initial CNN layers of the transformer for feature extraction are sufficiently trained during pre-training. So during the fine-tuning step we prevent it from further training by freezing their parameters. The hyper-parameters  for fine-tuning are adjusted to obtain the best values. We train our models on a single NVIDIA Tesla T4 GPU using Adam optimiser for 25 epochs. We warm up the learning rate for 800 steps, to a peak of $2.4 \times 10^{−5}$. The trained models are available in Huggingface model hub\footnote{Links will be provided in camera ready paper} along with model cards describing the hyperparameters. We build statistical word level trigram LM using KenLM \cite{heafield2011kenlm} library. The LM is combined with the XLS-R acoustic model using PyCTC decoder.
+The initial CNN layers of the transformer for feature extraction are sufficiently trained during pre-training. So during the fine-tuning step we prevent it from further training by freezing their parameters. The hyper-parameters  for fine-tuning are adjusted to obtain the best values. We train our models on a single NVIDIA Tesla T4 GPU using Adam optimiser for 25 epochs. We warm up the learning rate for 800 steps, to a peak of $2.4 \times 10^{−5}$. The WER reduction on the validation set is shown in Fig. \ref{Fig:WER}.The trained model is available in Huggingface model hub\footnote{\url{https://huggingface.co/kavyamanohar/XLSR-WithLM-Malayalam}} along with model cards describing the hyperparameters. We build statistical word level trigram LM using KenLM \cite{heafield2011kenlm} library. The LM is combined with the XLS-R acoustic model using PyCTC decoder.
 % The changes we have made to the the default parameter set in CTC layer is tabulated in Table \ref{tab:optimization}. 
 % The reduction is word error rate (WER) on validation data during training is illustrated in Fig. \ref{Fig:WER}. 
 %, hold for 42000 steps and then exponential decay it
@@ -316,7 +271,7 @@ results of evaluating our model upon these test datasets, with and without the a
 \end{equation}
 
 
-T1 belongs to the same class of studio recorded read speech corpora used in the training process. T2 and T3 however are OOD datasets, where T3 is particularly unique with its mock conversational nature and noisy recording environments. With a trigram language model on top of XLS-R acoustic model, the WER on the evaluation datasets T1, T2 and T3 are 27.3\%, 37.2\% and 52.9\% respectively. These values show a substantial improvement in WER when compared with the same model without an explicit LM by relative WER reduction of 12.5\%, 15.3\% and 5.9\% respectively.
+T1 belongs to the same class of studio recorded read speech corpora used in the training process. T2 and T3 however are OOD datasets, where T3 is particularly unique with its mock conversational nature and noisy recording environments. Using a trigram language model on top of the XLS-R acoustic model, the WER for evaluation datasets T1, T2, and T3 are 27.3\%, 37.2\%, and 52.9\%, respectively. This represents a significant improvement, with an absolute WER reduction of 12.5\%, 15.3\%, and 5.9\% compared to the same model without an explicit language model.
 
 \begin{figure}[htpb]
 % \vspace{-0.2}
@@ -356,11 +311,11 @@ The resulting WER on different datasets are illustrated in Fig. \ref{Fig:WEReval
 %     \end{tabular}
 
 % \end{table}
-
+\section{Limitations}
+Language modeling is particularly effective when acoustic modeling data (labeled speech data) is limited, but there is an abundance of high-quality text data. In this study, the reported results are based on the available labeled speech data, and we did not explore how varying the amount of speech data would affect the quality of the acoustic model or the impact of the language model. Additionally, while domain-specific language models can significantly enhance ASR performance for specific domains, this study did not investigate the effects of using domain-adapted language models.
 \section{Conclusion}
 
-In this work, we have developed an ASR system for the Malayalam language using the self-supervised XLS-R architecture. The transformer is pre-trained on nearly 436K hours of unlabelled multilingual speech and fine-tuned on 69 hours of labelled Malayalam speech data from various publicly available sources. By incorporating a trigram language model on top of the XLS-R transformer, further improvement in the WER by  12.5\% was observed  on in-domain test dataset and an improvement of at least 5.9\% was observed on out-of-domain test datasets. An absolute improvement in WER is expected with additional speech data sources used in the fine-tuning process.
-
+In this work, we have developed an ASR system for the Malayalam language using the self-supervised XLS-R architecture. The transformer is pre-trained on nearly 436K hours of unlabelled multilingual speech and fine-tuned on 69 hours of labelled Malayalam speech data from various publicly available sources. By incorporating a trigram language model on top of the XLS-R transformer, further improvement in the WER by  12.5\% was observed  on in-domain test dataset and an improvement of at least 5.9\% was observed on out-of-domain test datasets. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
